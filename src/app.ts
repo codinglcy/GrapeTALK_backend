@@ -1,10 +1,15 @@
 import express, { Express, Request, Response } from "express";
-import * as dbcon from "./db/index";
-import dotenv from "dotenv";
+import "reflect-metadata";
+import redisCli from "./db/redis_con";
+import mysqlCon from "./db/mysql_con";
+import cors from "cors";
+import "dotenv/config";
 
-dotenv.config();
 const app: Express = express();
-dbcon;
+
+app.use(cors());
+redisCli;
+mysqlCon;
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Typescript + Node.js + Express Server");
