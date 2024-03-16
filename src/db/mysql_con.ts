@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { UsersEntity } from "../entity/users.entity";
+import { UsersEntity } from "./entity/users.entity";
 import "dotenv/config";
 
 const mysqlCon = new DataSource({

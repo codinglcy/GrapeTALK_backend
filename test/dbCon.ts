@@ -10,7 +10,7 @@ const mysqlCon = new DataSource({
   username: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_TESTDATABASE,
-  entities: ["src/entity/*.entity.ts"],
+  entities: ["**/entity/*.entity.ts"],
   logging: false, //로그에 쿼리 나올지말지
   synchronize: true,
   dropSchema: true,
