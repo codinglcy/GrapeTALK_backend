@@ -1,23 +1,29 @@
-import { createClient } from "redis";
+import { RedisClientType, createClient } from "redis";
 import "dotenv/config";
 
 // <redis cloud connect>
 // redis[s]://[[username][:password]@][host][:port][/db-number]
-const redisUrl = `redis://${process.env.REDIS_USERNAME}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`;
+const redisUrl: string = `redis://${process.env.REDIS_USERNAME}:${process.env.REDIS_PASSWORD}@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`;
 
-const redisCli = createClient({
+const redisClient: RedisClientType = createClient({
   url: redisUrl,
   legacyMode: true,
 });
 
-redisCli.on("connect", () => {
+redisClient.on("connect", () => {
   console.log(`redis [port: ${process.env.REDIS_PORT}] connected!`);
 });
 
-redisCli.on("error", (err: any) => {
+redisClient.on("error", (err: any) => {
   console.log("redis client error!", err);
 });
 
-redisCli.connect().then();
+redisClient.on("end", () => {
+  console.log(`redis [port: ${process.env.REDIS_PORT}] disconnected.`);
+});
+
+redisClient.connect().then();
+
+const redisCli: Record<string, any> = redisClient.v4;
 
 export default redisCli;
