@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "node ./bin/app.js",
+    "start": "node ./build/app.js",
     "dev": "ts-node ./src/app.ts",
     "test": "jest --config ./src/test/jest.config.ts --setupFiles dotenv/config"
   },
