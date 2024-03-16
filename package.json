@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "node ./build/app.js",
     "dev": "ts-node ./src/app.ts",
-    "test": "jest --config ./src/test/jest.config.ts --setupFiles dotenv/config"
+    "test": "jest --config ./test/jest.config.ts --setupFiles dotenv/config"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
