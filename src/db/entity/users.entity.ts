@@ -18,14 +18,14 @@ export class UsersEntity {
   @Column("varchar")
   email: string;
 
-  @Column("varchar", { length: 11, unique: true })
+  @Column("varchar", { length: 13, unique: true })
   phnum: string;
 
   @Column("varchar", { nullable: true })
   profileimg: string;
 
   @Column("varchar", { length: 100, nullable: true })
-  profilemsg: string;
+  profilemsg?: string;
 
   @OneToMany(() => FriendEntity, (friend: FriendEntity) => friend.user_id, {
     cascade: true,
