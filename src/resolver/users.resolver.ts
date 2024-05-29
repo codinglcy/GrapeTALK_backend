@@ -20,10 +20,7 @@ export class UsersResolver {
 
   @Mutation(() => Users)
   async createUser(@Arg("data") data: createUsers) {
-    console.log("Mutation createUser...");
-
     const newUser = await this.usersService.createUser(data);
-    console.log(newUser);
     return newUser;
   }
 

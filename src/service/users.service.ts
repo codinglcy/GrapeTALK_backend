@@ -22,14 +22,13 @@ export class UsersService {
   }
 
   async createUser(data: createUsers): Promise<Users | void> {
-    console.log("createUser loading...");
     let user = new UsersEntity();
     user.user_id = data.user_id;
     user.pwd = data.pwd;
     user.nicknm = data.nicknm;
     user.email = data.email;
     user.phnum = data.phnum;
-    user.profileimg = data.profileimg ? data.profileimg : "";
+    user.profileimg = data.profileimg;
     user.profilemsg = data.profilemsg;
 
     return await this.usersRepository

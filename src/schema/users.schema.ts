@@ -10,7 +10,7 @@ export class Users {
   email!: string;
   @Field()
   phnum!: string;
-  @Field()
+  @Field({ nullable: true })
   profileimg?: string;
   @Field({ nullable: true })
   profilemsg?: string;
@@ -63,9 +63,3 @@ export class updateUsersPassword {
   @Field()
   pwd!: string;
 }
-
-// @InputType()
-// export class UserId {
-//   @Field()
-//   user_id!: string;
-// }

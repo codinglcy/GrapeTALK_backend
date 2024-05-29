@@ -22,7 +22,7 @@ export class UsersEntity {
   phnum: string;
 
   @Column("varchar", { nullable: true })
-  profileimg: string;
+  profileimg?: string;
 
   @Column("varchar", { length: 100, nullable: true })
   profilemsg?: string;
