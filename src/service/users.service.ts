@@ -1,6 +1,12 @@
 import mysqlCon from "../db/mysql_con";
 import { UsersEntity } from "../db/entity/users.entity";
-import { Users, createUsers } from "../schema";
+import {
+  Users,
+  createUsers,
+  updateUsersInfo,
+  updateUsersPassword,
+  updateUsersProfile,
+} from "../schema";
 
 export class UsersService {
   private readonly usersRepository = mysqlCon.getRepository(UsersEntity);
@@ -39,6 +45,44 @@ export class UsersService {
       .catch((err) => {
         console.log(err);
       });
+  }
+
+  async updateUser(
+    data: updateUsersInfo | updateUsersProfile
+  ): Promise<Users | void> {
+    return await this.usersRepository.update(data.user_id, data).then(() => {
+      return this.usersRepository
+        .findOne({
+          where: { user_id: data.user_id },
+        })
+        .then((res) => {
+          return res;
+        })
+        .catch((err) => {
+          return err;
+        });
+    });
+  }
+
+  async updateUserPassword(data: updateUsersPassword): Promise<string | void> {
+    //비밀번호 암호화 로직
+    //~~~~~
+    //~~~~~
+
+    let result = await this.usersRepository
+      .update(data.user_id, data)
+      .then((res) => {
+        return res;
+      })
+      .catch((err) => {
+        return { affected: 0 };
+      });
+
+    if (result.affected === 1) {
+      return `${data.user_id}님, 비밀번호가 성공적으로 수정되었습니다.`;
+    } else {
+      return `비밀번호 수정중 오류 발생.`;
+    }
   }
 
   async deleteUserById(id: string): Promise<string> {

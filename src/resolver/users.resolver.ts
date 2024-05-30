@@ -1,8 +1,13 @@
 import { Query, Resolver, Mutation, Arg } from "type-graphql";
-import { Users, createUsers } from "../schema";
+import {
+  Users,
+  createUsers,
+  updateUsersInfo,
+  updateUsersPassword,
+  updateUsersProfile,
+} from "../schema";
 import { UsersService } from "../service/users.service";
 import { UsersEntity } from "../db/entity/users.entity";
-// import { UsersEntity } from "../db/entity/users.entity";
 
 @Resolver(UsersEntity)
 export class UsersResolver {
@@ -20,8 +25,22 @@ export class UsersResolver {
 
   @Mutation(() => Users)
   async createUser(@Arg("data") data: createUsers) {
-    const newUser = await this.usersService.createUser(data);
-    return newUser;
+    return this.usersService.createUser(data);
+  }
+
+  @Mutation(() => Users)
+  async updateUserProfile(@Arg("data") data: updateUsersProfile) {
+    return this.usersService.updateUser(data);
+  }
+
+  @Mutation(() => Users)
+  async updateUserInfo(@Arg("data") data: updateUsersInfo) {
+    return this.usersService.updateUser(data);
+  }
+
+  @Mutation(() => String)
+  async updateUserPassword(@Arg("data") data: updateUsersPassword) {
+    return this.usersService.updateUserPassword(data);
   }
 
   @Mutation(() => String)
