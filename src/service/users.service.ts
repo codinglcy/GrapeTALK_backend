@@ -1,15 +1,11 @@
 import mysqlCon from "../db/mysql_con";
+import redisCli from "../db/redis_con";
 import { UsersEntity } from "../db/entity/users.entity";
-import {
-  Users,
-  createUsers,
-  updateUsersInfo,
-  updateUsersPassword,
-  updateUsersProfile,
-} from "../schema";
+import { Users, createUsers, useridpw, updateUsersInfo } from "../schema";
 
 export class UsersService {
   private readonly usersRepository = mysqlCon.getRepository(UsersEntity);
+  private readonly usersRedis = redisCli;
 
   async getUserById(id: string): Promise<Users | null> {
     return await this.usersRepository
@@ -47,9 +43,7 @@ export class UsersService {
       });
   }
 
-  async updateUser(
-    data: updateUsersInfo | updateUsersProfile
-  ): Promise<Users | void> {
+  async updateUser(data: updateUsersInfo): Promise<Users | void> {
     return await this.usersRepository.update(data.user_id, data).then(() => {
       return this.usersRepository
         .findOne({
@@ -64,12 +58,12 @@ export class UsersService {
     });
   }
 
-  async updateUserPassword(data: updateUsersPassword): Promise<string | void> {
+  async updateUserPassword(data: useridpw): Promise<string | void> {
     //비밀번호 암호화 로직
     //~~~~~
     //~~~~~
 
-    let result = await this.usersRepository
+    const result = await this.usersRepository
       .update(data.user_id, data)
       .then((res) => {
         return res;
@@ -86,11 +80,40 @@ export class UsersService {
   }
 
   async deleteUserById(id: string): Promise<string> {
-    let result = await this.usersRepository.delete({ user_id: id });
+    const result = await this.usersRepository.delete({ user_id: id });
 
     if (result.affected === 1) {
       return `user_id [${id}] 계정을 삭제했습니다.`;
     }
     return "계정 삭제에 실패했습니다.";
+  }
+
+  async login(data: useridpw): Promise<string | null | void> {
+    // 1. 아이디 정보 존재여부 확인
+    const findUser = await this.usersRepository.findOne({
+      where: { user_id: data.user_id },
+    });
+
+    if (!findUser) {
+      throw new Error(
+        `[${data.user_id}]는 존재하지 않는 아이디입니다. 다시 한 번 확인해주세요.`
+      );
+    }
+
+    // 2. 비밀번호 일치 여부 확인(추후 암호화 관련 코드 추가)
+    if (data.pwd == findUser.pwd) {
+      // 3. 토큰 생성, redis 저장(30일)
+      const token = "token1";
+
+      return this.usersRedis
+        .setex(data.user_id, 60 * 60 * 24 * 30, token)
+        .then(() => {
+          return this.usersRedis.get(data.user_id);
+        });
+
+      // return token;
+    } else {
+      throw new Error(`비밀번호가 일치하지 않습니다. 다시 확인해주세요.`);
+    }
   }
 }

@@ -38,6 +38,6 @@ redisClient.on("end", () => {
 
 redisClient.connect().then();
 
-const redisCli: Record<string, any> = redisClient.v4;
+const redisCli = redisClient.v4;
 
 export default redisCli;

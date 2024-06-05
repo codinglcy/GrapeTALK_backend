@@ -35,29 +35,23 @@ export class createUsers {
 }
 
 @InputType()
-export class updateUsersProfile {
+export class updateUsersInfo {
   @Field()
   user_id!: string;
-  @Field()
+  @Field({ nullable: true })
   nicknm!: string;
   @Field({ nullable: true })
   profileimg?: string;
   @Field({ nullable: true })
   profilemsg?: string;
-}
-
-@InputType()
-export class updateUsersInfo {
-  @Field()
-  user_id!: string;
-  @Field()
+  @Field({ nullable: true })
   email!: string;
-  @Field()
+  @Field({ nullable: true })
   phnum!: string;
 }
 
 @InputType()
-export class updateUsersPassword {
+export class useridpw {
   @Field()
   user_id!: string;
   @Field()

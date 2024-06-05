@@ -1,11 +1,5 @@
 import { Query, Resolver, Mutation, Arg } from "type-graphql";
-import {
-  Users,
-  createUsers,
-  updateUsersInfo,
-  updateUsersPassword,
-  updateUsersProfile,
-} from "../schema";
+import { Users, createUsers, updateUsersInfo, useridpw } from "../schema";
 import { UsersService } from "../service/users.service";
 import { UsersEntity } from "../db/entity/users.entity";
 
@@ -29,22 +23,22 @@ export class UsersResolver {
   }
 
   @Mutation(() => Users)
-  async updateUserProfile(@Arg("data") data: updateUsersProfile) {
-    return this.usersService.updateUser(data);
-  }
-
-  @Mutation(() => Users)
   async updateUserInfo(@Arg("data") data: updateUsersInfo) {
     return this.usersService.updateUser(data);
   }
 
   @Mutation(() => String)
-  async updateUserPassword(@Arg("data") data: updateUsersPassword) {
+  async updateUserPassword(@Arg("data") data: useridpw) {
     return this.usersService.updateUserPassword(data);
   }
 
   @Mutation(() => String)
   async deleteUser(@Arg("user_id") id: string) {
     return this.usersService.deleteUserById(id);
+  }
+
+  @Query(() => String)
+  async login(@Arg("data") data: useridpw) {
+    return this.usersService.login(data);
   }
 }
