@@ -1,5 +1,6 @@
 import mysqlCon from "../db/mysql_con";
 import redisCli from "../db/redis_con";
+import { checkHashPwd, hashingPwd } from "../util";
 import { UsersEntity } from "../db/entity/users.entity";
 import { Users, createUsers, useridpw, updateUsersInfo } from "../schema";
 
@@ -26,7 +27,7 @@ export class UsersService {
   async createUser(data: createUsers): Promise<Users | void> {
     let user = new UsersEntity();
     user.user_id = data.user_id;
-    user.pwd = data.pwd;
+    user.pwd = hashingPwd(data.pwd);
     user.nicknm = data.nicknm;
     user.email = data.email;
     user.phnum = data.phnum;
@@ -59,12 +60,8 @@ export class UsersService {
   }
 
   async updateUserPassword(data: useridpw): Promise<string | void> {
-    //비밀번호 암호화 로직
-    //~~~~~
-    //~~~~~
-
     const result = await this.usersRepository
-      .update(data.user_id, data)
+      .update(data.user_id, { pwd: hashingPwd(data.pwd) })
       .then((res) => {
         return res;
       })
@@ -101,15 +98,14 @@ export class UsersService {
     }
 
     // 2. 비밀번호 일치 여부 확인(추후 암호화 관련 코드 추가)
-    if (data.pwd == findUser.pwd) {
+    if (checkHashPwd(data.pwd, findUser.pwd)) {
       // 3. 토큰 생성, redis 저장(30일)
       const token = "token1";
 
-      return this.usersRedis
-        .setex(data.user_id, 60 * 60 * 24 * 30, token)
-        .then(() => {
-          return this.usersRedis.get(data.user_id);
-        });
+      return this.usersRedis.set(data.user_id, token).then(() => {
+        this.usersRedis.expire(data.user_id, 60 * 60 * 24 * 30);
+        return this.usersRedis.get(data.user_id);
+      });
 
       // return token;
     } else {
