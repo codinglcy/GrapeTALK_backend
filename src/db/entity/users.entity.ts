@@ -12,10 +12,10 @@ export class UsersEntity {
   @Column("varchar")
   pwd: string;
 
-  @Column("varchar", { length: 50 })
+  @Column("varchar", { length: 60 })
   nicknm: string;
 
-  @Column("varchar")
+  @Column("varchar", { unique: true })
   email: string;
 
   @Column("varchar", { length: 13, unique: true })

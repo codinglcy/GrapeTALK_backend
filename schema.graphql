@@ -6,12 +6,14 @@
 type Mutation {
   createUser(data: createUsers!): Users!
   deleteUser(user_id: String!): String!
+  sendEmail(data: sendEmail!): String!
   updateUserInfo(data: updateUsersInfo!): Users!
   updateUserPassword(data: useridpw!): String!
 }
 
 type Query {
   getAllUsers: [Users!]!
+  getUser(data: findAccount!): Users!
   getUserById(user_id: String!): Users!
   login(data: useridpw!): String!
 }
@@ -33,6 +35,17 @@ input createUsers {
   profilemsg: String
   pwd: String!
   user_id: String!
+}
+
+input findAccount {
+  email: String!
+  nicknm: String!
+  phnum: String!
+}
+
+input sendEmail {
+  email: String!
+  user_id: String
 }
 
 input updateUsersInfo {

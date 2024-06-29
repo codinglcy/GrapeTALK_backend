@@ -1,27 +1,68 @@
 import mysqlCon from "../db/mysql_con";
 import redisCli from "../db/redis_con";
-import { checkHashPwd, hashingPwd } from "../util";
+import { checkHashPwd, hashingPwd, sendMail } from "../util";
 import { UsersEntity } from "../db/entity/users.entity";
-import { Users, createUsers, useridpw, updateUsersInfo } from "../schema";
+import {
+  Users,
+  createUsers,
+  useridpw,
+  updateUsersInfo,
+  sendEmail,
+} from "../schema";
 
 export class UsersService {
   private readonly usersRepository = mysqlCon.getRepository(UsersEntity);
   private readonly usersRedis = redisCli;
 
-  async getUserById(id: string): Promise<Users | null> {
+  async getUserById(id: string): Promise<Users | void | null> {
     return await this.usersRepository
       .findOne({
         where: { user_id: id },
       })
       .then((res) => {
         return res;
+      })
+      .catch((err) => {
+        console.log(err);
+        return;
       });
   }
 
-  async getUsersAll(): Promise<[Users] | Users[] | null> {
-    return await this.usersRepository.find({}).then((res) => {
-      return res;
-    });
+  async getUserByEmail(email: string): Promise<Users | void | null> {
+    return await this.usersRepository
+      .findOne({
+        where: { email: email },
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  async getUserByPhnum(phnum: string): Promise<Users | void | null> {
+    return await this.usersRepository
+      .findOne({
+        where: { phnum: phnum },
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  async getUsersAll(): Promise<[Users] | Users[] | void> {
+    return await this.usersRepository
+      .find({})
+      .then((res) => {
+        return res;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   async createUser(data: createUsers): Promise<Users | void> {
@@ -103,13 +144,26 @@ export class UsersService {
       const token = "token1";
 
       return this.usersRedis.set(data.user_id, token).then(() => {
-        this.usersRedis.expire(data.user_id, 60 * 60 * 24 * 30);
+        // this.usersRedis.expire(data.user_id, 60 * 60 * 24 * 30);//30일
+        this.usersRedis.expire(data.user_id, 60 * 3); //3분
         return this.usersRedis.get(data.user_id);
       });
 
       // return token;
     } else {
       throw new Error(`비밀번호가 일치하지 않습니다. 다시 확인해주세요.`);
+    }
+  }
+
+  async sendMail(data: sendEmail): Promise<void> {
+    if (!data.user_id) {
+      sendMail(data.email).then((res) => {
+        this.usersRedis.set(data.email, res).then(() => {
+          this.usersRedis.expire(data.email, 60 * 3); //3분
+        });
+      });
+    } else {
+      sendMail(data.email, data.user_id);
     }
   }
 }

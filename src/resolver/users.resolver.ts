@@ -1,5 +1,12 @@
 import { Query, Resolver, Mutation, Arg } from "type-graphql";
-import { Users, createUsers, updateUsersInfo, useridpw } from "../schema";
+import {
+  Users,
+  createUsers,
+  findAccount,
+  sendEmail,
+  updateUsersInfo,
+  useridpw,
+} from "../schema";
 import { UsersService } from "../service/users.service";
 import { UsersEntity } from "../db/entity/users.entity";
 
@@ -15,6 +22,15 @@ export class UsersResolver {
   @Query(() => Users)
   async getUserById(@Arg("user_id") id: string) {
     return this.usersService.getUserById(id);
+  }
+
+  @Query(() => Users)
+  async getUser(@Arg("data") data: findAccount) {
+    if (data.email) {
+      return this.usersService.getUserByEmail(data.email);
+    } else if (data.phnum) {
+      return this.usersService.getUserByPhnum(data.phnum);
+    }
   }
 
   @Mutation(() => Users)
@@ -40,5 +56,17 @@ export class UsersResolver {
   @Query(() => String)
   async login(@Arg("data") data: useridpw) {
     return this.usersService.login(data);
+  }
+
+  @Mutation(() => String)
+  async sendEmail(@Arg("data") data: sendEmail) {
+    return this.usersService
+      .sendMail(data)
+      .then(() => {
+        return "이메일을 성공적으로 보냈습니다.";
+      })
+      .catch((err) => {
+        return err;
+      });
   }
 }

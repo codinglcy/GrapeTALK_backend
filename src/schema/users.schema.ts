@@ -57,3 +57,21 @@ export class useridpw {
   @Field()
   pwd!: string;
 }
+
+@InputType()
+export class findAccount {
+  @Field()
+  nicknm: string;
+  @Field()
+  phnum?: string;
+  @Field()
+  email?: string;
+}
+
+@InputType()
+export class sendEmail {
+  @Field()
+  email!: string;
+  @Field({ nullable: true })
+  user_id?: string;
+}
